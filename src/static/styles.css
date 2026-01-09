@@ -197,6 +197,24 @@ footer {
   color: #444;
   font-size: 14px;
   word-break: break-all;
+  flex: 1;
+}
+
+/* Unregister / delete button */
+.delete-btn {
+  background: transparent;
+  border: none;
+  color: #c62828;
+  margin-left: 12px;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 4px;
+}
+
+.delete-btn:hover {
+  background-color: rgba(198, 40, 40, 0.08);
 }
 
 /* Empty state */

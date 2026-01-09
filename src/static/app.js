@@ -47,7 +47,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     (p) =>
                       `<li><span class="participant-badge">${getInitials(p)}</span><span class="participant-email">${escapeHtml(
                         p
-                      )}</span></li>`
+                      )}</span><button class="delete-btn" data-activity="${escapeHtml(name)}" data-email="${escapeHtml(
+                        p
+                      )}" title="Unregister ${escapeHtml(p)}">&times;</button></li>`
                   )
                   .join("")}
               </ul>
@@ -116,6 +118,42 @@ document.addEventListener("DOMContentLoaded", () => {
       messageDiv.className = "error";
       messageDiv.classList.remove("hidden");
       console.error("Error signing up:", error);
+    }
+  });
+
+  // Handle delete/unregister participant (event delegation)
+  activitiesList.addEventListener("click", async (e) => {
+    if (!e.target.matches(".delete-btn")) return;
+    const btn = e.target;
+    const activity = btn.dataset.activity;
+    const email = btn.dataset.email;
+
+    if (!confirm(`Unregister ${email} from ${activity}?`)) return;
+
+    try {
+      const resp = await fetch(
+        `/activities/${encodeURIComponent(activity)}/signup?email=${encodeURIComponent(email)}`,
+        { method: "DELETE" }
+      );
+      const result = await resp.json();
+      if (resp.ok) {
+        messageDiv.textContent = result.message;
+        messageDiv.className = "success";
+        // refresh list
+        fetchActivities();
+      } else {
+        messageDiv.textContent = result.detail || "Failed to unregister participant";
+        messageDiv.className = "error";
+      }
+    } catch (err) {
+      messageDiv.textContent = "Failed to unregister participant. Please try again.";
+      messageDiv.className = "error";
+      console.error("Error unregistering participant:", err);
+    } finally {
+      messageDiv.classList.remove("hidden");
+      setTimeout(() => {
+        messageDiv.classList.add("hidden");
+      }, 5000);
     }
   });
 
